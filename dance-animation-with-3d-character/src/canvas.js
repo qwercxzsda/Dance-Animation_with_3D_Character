@@ -1,6 +1,7 @@
 // @ts-check
 
-import * as BABYLON from '@babylonjs/core'
+import * as BABYLON from '@babylonjs/core';
+import '@babylonjs/loaders';
 
 /**
  *
@@ -10,6 +11,9 @@ export function setUpCanvas(canvas) {
     const engine = new BABYLON.Engine(canvas, true);
     const scene = createScene(engine);
 
+    // TODO: need to wait until the SceneLoader in creatScene is complete
+    // Otherwise, scene.render(); is called before the camera is created.
+    // Temporarily fixed the issue creating camera twice.
     engine.runRenderLoop(function () {
         scene.render();
     })
@@ -27,9 +31,9 @@ export function setUpCanvas(canvas) {
 function createScene(engine) {
     const scene = new BABYLON.Scene(engine);
 
-    const box = BABYLON.MeshBuilder.CreateBox("box", {bottomBaseAt:10}, scene);
-    box.position.y = 0.5;
-    createCameraAndLightAndEnvironment(scene);
+    scene.createDefaultCamera(true, true, true);
+    BABYLON.SceneLoader.Append("/adamHead/", "adamHead.gltf",
+        scene, createCameraAndLightAndEnvironment);
 
     return scene;
 }
@@ -39,11 +43,7 @@ function createScene(engine) {
  * @param {BABYLON.Scene} scene 
  */
 function createCameraAndLightAndEnvironment(scene) {
-    const camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 15, new BABYLON.Vector3(0, 0, 0));
-    camera.attachControl(0, true);
-
-    const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(1, 1, 0), scene);
-    scene.createDefaultEnvironment();
-
-    const ground = BABYLON.MeshBuilder.CreateGround("ground", {width:10, height:10}, scene);
+    scene.createDefaultCamera(true, true, true);
+    scene.createDefaultLight(true);
+    scene.createDefaultEnvironment({ groundColor: BABYLON.Color3.White() });
 }

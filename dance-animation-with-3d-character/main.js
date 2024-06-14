@@ -1,4 +1,4 @@
-import './style.css'
-import { setUpCanvas } from './src/canvas.js'
+import './style.css';
+import { setUpCanvas } from './src/canvas.js';
 
-setUpCanvas(document.querySelector('#renderCanvas'))
+setUpCanvas(document.querySelector('#renderCanvas'));
