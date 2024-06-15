@@ -1,12 +1,19 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Dance Animation</title>
-  </head>
-  <body>
-    <canvas id="renderCanvas"></canvas>
-    <script type="module" src="/main.js"></script>
-  </body>
+
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dance Animation</title>
+</head>
+
+<body>
+<div id="wrapper">
+  <label for="inputModel">Upload model</label>
+  <input type="file" id="inputModel" accept=".glb, .gltf"/>
+  <canvas id="renderCanvas"></canvas>
+</div>
+<script type="module" src="/main.js"></script>
+</body>
+
 </html>
