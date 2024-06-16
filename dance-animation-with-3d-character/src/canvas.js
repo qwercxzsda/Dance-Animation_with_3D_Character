@@ -2,8 +2,8 @@
 
 import * as BABYLON from '@babylonjs/core';
 import '@babylonjs/loaders';
-import './logger.js';
 import {logger} from "./logger.js";
+import {guess} from 'web-audio-beat-detector';
 
 export class CanvasController {
     /**
@@ -78,13 +78,13 @@ export class CanvasController {
     /**
      * Asynchronously change the sound of the canvas to the sound from the soundPath
      * @param {String} soundPath
-     * @returns {Promise<void>}
+     * @returns {Promise<number>}
      */
     async changeSong(soundPath) {
         logger.info(`changeSong: called {soundPath: ${soundPath}}`);
         if (this.#scene === undefined || this.#scene === null) {
             logger.warn('changeSong: this.#scene is undefined or null');
-            return;
+            return 0;
         }
         if (this.#sound !== undefined && this.#sound !== null) {
             this.#sound.dispose();
@@ -92,7 +92,27 @@ export class CanvasController {
         }
         const sound = new BABYLON.Sound("sound", soundPath, this.#scene, null, {loop: true, autoplay: true});
         this.#sound = sound;
-        logger.info('changeSong: returned {}');
+        const soundBPM = await this.#getSongBPM(soundPath);
+        logger.info(`changeSong: returned {soundBPM: ${soundBPM}`);
+        return soundBPM;
+    }
+
+    /**
+     * Asynchronously get the BPM of the song from the soundPath
+     * @param {String} soundPath
+     * @returns {Promise<number>}
+     */
+    async #getSongBPM(soundPath) {
+        logger.info(`getSongBPM: called {soundPath: ${soundPath}}`);
+        const audioBuffer =
+            await fetch(soundPath)
+                .then(response => response.arrayBuffer())
+                .then(buffer => new AudioContext().decodeAudioData(buffer));
+        logger.info(`getSongBPM: {audioBuffer: ${audioBuffer}}`);
+        const result = await guess(audioBuffer);
+        logger.info(`getSongBPM: {result.bpm: ${result.bpm}, result.offset: ${result.offset}`);
+        logger.info(`getSongBPM: returned {bpm: ${result.bpm}}`);
+        return result.bpm;
     }
 
     /**
