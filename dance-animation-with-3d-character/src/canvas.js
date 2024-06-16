@@ -2,6 +2,8 @@
 
 import * as BABYLON from '@babylonjs/core';
 import '@babylonjs/loaders';
+import './logger.js';
+import {logger} from "./logger.js";
 
 export class CanvasController {
     /**
@@ -39,11 +41,13 @@ export class CanvasController {
      * @returns {Promise<void>}
      */
     async setUpCanvas(modelPath, extension) {
+        logger.info(`setUpCanvas: called {modelPath: ${modelPath}, extension: ${extension}}`);
         const engine = await this.#createEngine();
         this.#engine = engine;
         await this.changeModel(modelPath, extension);
 
         window.addEventListener('resize', () => engine.resize());
+        logger.info('setUpCanvas: returned {}');
     }
 
     /**
@@ -54,6 +58,7 @@ export class CanvasController {
      * @returns {Promise<void>}
      */
     async changeModel(modelPath, extension) {
+        logger.info(`changeModel: called {modelPath: ${modelPath}, extension: ${extension}}`);
         this.#engine.stopRenderLoop();
 
         if (this.#scene !== undefined && this.#scene !== null) {
@@ -67,6 +72,7 @@ export class CanvasController {
         this.#scene = scene;
 
         this.#engine.runRenderLoop(() => scene.render());
+        logger.info('changeModel: returned {}');
     }
 
     /**
@@ -75,7 +81,9 @@ export class CanvasController {
      * @returns {Promise<void>}
      */
     async changeSong(soundPath) {
+        logger.info(`changeSong: called {soundPath: ${soundPath}}`);
         if (this.#scene === undefined || this.#scene === null) {
+            logger.warn('changeSong: this.#scene is undefined or null');
             return;
         }
         if (this.#sound !== undefined && this.#sound !== null) {
@@ -84,6 +92,7 @@ export class CanvasController {
         }
         const sound = new BABYLON.Sound("sound", soundPath, this.#scene, null, {loop: true, autoplay: true});
         this.#sound = sound;
+        logger.info('changeSong: returned {}');
     }
 
     /**
@@ -91,7 +100,9 @@ export class CanvasController {
      * @returns {Promise<BABYLON.Engine>}
      */
     async #createEngine() {
+        logger.info('createEngine: called {}');
         const engine = new BABYLON.Engine(this.#canvas, true);
+        logger.info(`createEngine: returned {engine: ${engine}}`);
         return engine;
     }
 
@@ -102,8 +113,10 @@ export class CanvasController {
      * @returns {Promise<BABYLON.Scene>}
      */
     async #createScene(modelPath, extension) {
+        logger.info(`createScene: called {modelPath: ${modelPath}, extension: ${extension}}`);
         const scene = await BABYLON.SceneLoader.LoadAsync(modelPath, "", this.#engine, null, extension);
         this.#createCameraAndLightAndEnvironment(scene);
+        logger.info(`createScene: returned {scene: ${scene}}`);
         return scene;
     }
 
