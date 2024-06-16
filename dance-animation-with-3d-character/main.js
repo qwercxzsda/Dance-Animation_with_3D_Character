@@ -12,3 +12,11 @@ inputModel.addEventListener('change', function () {
 
     canvasController.changeModel(inputModelPath, extension);
 });
+
+const inputSong = document.querySelector('#inputSong');
+inputSong.addEventListener('change', function () {
+    const file = inputSong.files[0];
+    const inputSongPath = URL.createObjectURL(file);
+
+    canvasController.changeSong(inputSongPath);
+});

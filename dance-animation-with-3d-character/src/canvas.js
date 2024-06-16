@@ -12,6 +12,14 @@ export class CanvasController {
      * @type {BABYLON.Engine}
      */
     #engine;
+    /**
+     * @type {BABYLON.Scene}
+     */
+    #scene;
+    /**
+     * @type {BABYLON.Sound}
+     */
+    #sound;
 
     /**
      * Constructor of CanvasController
@@ -35,25 +43,47 @@ export class CanvasController {
         this.#engine = engine;
         await this.changeModel(modelPath, extension);
 
-        window.addEventListener('resize', function () {
-            engine.resize();
-        });
+        window.addEventListener('resize', () => engine.resize());
     }
 
     /**
      * Asynchronously change the model of the canvas to the model from the modelPath
-     * Side effect: change this.#engine
+     * Side effect: change this.#scenes
      * @param {String} modelPath
      * @param {String} extension
      * @returns {Promise<void>}
      */
     async changeModel(modelPath, extension) {
         this.#engine.stopRenderLoop();
-        const scene = await this.#createScene(modelPath, extension);
 
-        this.#engine.runRenderLoop(function () {
-            scene.render();
-        });
+        if (this.#scene !== undefined && this.#scene !== null) {
+            this.#scene.dispose();
+            // As createScene is asynchronous, this.#scene might be referenced after dispose
+            // To avoid this, set this.#scene to null
+            // Furthermore, we will set every variable to null after dispose (just to be safe)
+            this.#scene = null;
+        }
+        const scene = await this.#createScene(modelPath, extension);
+        this.#scene = scene;
+
+        this.#engine.runRenderLoop(() => scene.render());
+    }
+
+    /**
+     * Asynchronously change the sound of the canvas to the sound from the soundPath
+     * @param {String} soundPath
+     * @returns {Promise<void>}
+     */
+    async changeSong(soundPath) {
+        if (this.#scene === undefined || this.#scene === null) {
+            return;
+        }
+        if (this.#sound !== undefined && this.#sound !== null) {
+            this.#sound.dispose();
+            this.#sound = null;
+        }
+        const sound = new BABYLON.Sound("sound", soundPath, this.#scene, null, {loop: true, autoplay: true});
+        this.#sound = sound;
     }
 
     /**

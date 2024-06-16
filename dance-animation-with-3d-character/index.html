@@ -9,8 +9,12 @@
 
 <body>
 <div id="wrapper">
-  <label for="inputModel">Upload model</label>
-  <input type="file" id="inputModel" accept=".glb, .gltf"/>
+  <div id="inputsWrapper">
+    <label for="inputModel" id="inputModelButton">Import Model</label>
+    <input type="file" id="inputModel" accept=".glb, .gltf"/>
+    <label for="inputSong" id="inputSongButton">Import Song</label>
+    <input type="file" id="inputSong" accept=".mp3, .wav"/>
+  </div>
   <canvas id="renderCanvas"></canvas>
 </div>
 <script type="module" src="/main.js"></script>

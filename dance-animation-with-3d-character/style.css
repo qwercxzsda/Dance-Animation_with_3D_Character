@@ -32,21 +32,38 @@ body {
   place-items: center;
 }
 
-#wrapper label {
+#wrapper #inputsWrapper {
+  display: flex;
+  flex-direction: row;
+  padding: 10px;
+  width: 50%;
+  justify-content: space-between;
+}
+
+#wrapper #inputsWrapper label {
   display: block;
-  background-color: #92bcc2;
-  color: #242424;
   font-size: 20px;
   font-weight: bold;
   padding: 12px;
   border-radius: 8px;
+  text-align: center;
 }
 
-#wrapper input {
+#wrapper #inputsWrapper #inputModelButton {
+  background-color: #92bcc2;
+  color: #242424;
+}
+
+#wrapper #inputsWrapper #inputSongButton {
+  background-color: #ef9de8;
+  color: #242424;
+}
+
+#wrapper #inputsWrapper input {
   display: none;
 }
 
-#renderCanvas {
+#wrapper #renderCanvas {
   width: 100%;
   height: 60%;
   touch-action: none;
