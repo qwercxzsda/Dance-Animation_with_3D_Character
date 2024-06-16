@@ -15,11 +15,11 @@ export class CanvasController {
      */
     #engine;
     /**
-     * @type {BABYLON.Scene}
+     * @type {BABYLON.Scene | null}
      */
     #scene;
     /**
-     * @type {BABYLON.Sound}
+     * @type {BABYLON.Sound | null}
      */
     #sound;
 
@@ -59,6 +59,10 @@ export class CanvasController {
      */
     async changeModel(modelPath, extension) {
         logger.info(`changeModel: called {modelPath: ${modelPath}, extension: ${extension}}`);
+        if (this.#engine === undefined || this.#engine === null) {
+            logger.warn('changeModel: this.#engine is undefined or null');
+            return;
+        }
         this.#engine.stopRenderLoop();
 
         if (this.#scene !== undefined && this.#scene !== null) {
