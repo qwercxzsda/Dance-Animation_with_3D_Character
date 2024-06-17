@@ -114,7 +114,6 @@ export class CanvasController {
         this.#soundBpm = soundBpm;
 
         this.stop();
-        this.play();
 
         logger.info(`changeSong: returned {soundBPM: ${soundBpm}`);
         return soundBpm;
