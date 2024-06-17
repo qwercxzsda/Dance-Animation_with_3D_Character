@@ -3,7 +3,7 @@
 import './style.css';
 import {CanvasController} from './src/canvas.js';
 import {logger} from './src/logger.js';
-import * as CONFIG from './src/config.js';
+import * as Config from './src/config.js';
 
 main();
 
@@ -11,7 +11,7 @@ function main() {
     logger.info('setUpCanvas start');
     // @ts-ignore: renderCanvas is defined in index.html
     const canvasController = new CanvasController(document.querySelector('#renderCanvas'));
-    canvasController.setUpCanvas(CONFIG.defaultModelPath, CONFIG.defaultModelExtension);
+    canvasController.setUpCanvas(Config.defaultModelPath, Config.defaultModelExtension);
     logger.info('setUpCanvas complete');
 
     logger.info('setUpInputModel start');
@@ -62,7 +62,7 @@ function setUpInputModel(inputModel, canvasController) {
  * @returns {void}
  */
 function setUpInputSong(bpmButton, inputSong, canvasController) {
-    bpmButton.innerHTML = `BPM: ${CONFIG.defaultBpm}`;
+    bpmButton.innerHTML = `BPM: ${Config.defaultBpm}`;
     inputSong.addEventListener('change', async function () {
         logger.info('Event: inputSong change');
         if (inputSong.files === null || inputSong.files.length === 0) {

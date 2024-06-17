@@ -1,16 +1,16 @@
 // @ts-check
 
-import * as BABYLON from '@babylonjs/core';
+import * as Babylon from '@babylonjs/core';
 import {logger} from './logger';
 import * as CONFIG from './config';
 
 /**
+ * Movement range for important bones (XYZ euler, radians)
  * @typedef {{x: {min: number, max: number}, y: {min: number, max: number}, z: {min: number, max: number}}} MovementRange
  * @type {Object.<String, MovementRange>}
  */
 const importantBonesMovementRange =
     {
-        // TODO: Add more bones
         Spine: {
             x: {min: degreesToRadians(-15), max: degreesToRadians(40)},
             y: {min: degreesToRadians(-30), max: degreesToRadians(30)},
@@ -62,7 +62,8 @@ function degreesToRadians(degree) {
 }
 
 /**
- * @param {BABYLON.Bone[]} boneList
+ * True iff the boneList contains all the important bones (as defined in importantBonesMovementRange)
+ * @param {Babylon.Bone[]} boneList
  * @returns
  */
 export function isValidBones(boneList) {
@@ -78,7 +79,7 @@ export function isValidBones(boneList) {
 }
 
 /**
- * @param {BABYLON.Bone[]} boneList
+ * @param {Babylon.Bone[]} boneList
  * @returns {Object.<String, Bone>}
  */
 function boneListToDict(boneList) {
@@ -92,15 +93,16 @@ function boneListToDict(boneList) {
 }
 
 /**
- * @param {BABYLON.Scene} scene
- * @param {BABYLON.Bone[]} boneList
- * @returns {BABYLON.AnimationGroup} - Has one key frame per second
+ * @param {Babylon.Scene} scene
+ * @param {Babylon.Bone[]} boneList
+ * @returns {Babylon.AnimationGroup} - Has one key frame per second
  */
 export function createAnimationGroup(scene, boneList) {
     console.assert(isValidBones(boneList));
     const bones = boneListToDict(boneList);
-    const animationGroup = new BABYLON.AnimationGroup('danceAnimationGroup', scene);
+    const animationGroup = new Babylon.AnimationGroup('danceAnimationGroup', scene);
 
+    // Create animations for each bone and add them to the animation group
     Object.entries(importantBonesMovementRange).forEach(([boneName, range]) => {
             const bone = bones[boneName];
             const transformNode = bone.getTransformNode();
@@ -118,24 +120,27 @@ export function createAnimationGroup(scene, boneList) {
 }
 
 /**
+ * Create an animation for a given bone
+ * boneName, range, and transformNode all are properties of a single bone
  * @param {String} boneName
  * @param {MovementRange} range
- * @param {BABYLON.TransformNode} transformNode
- * @returns {BABYLON.Animation}
+ * @param {Babylon.TransformNode} transformNode
+ * @returns {Babylon.Animation}
  */
 function createAnimation(boneName, range, transformNode) {
-    const animation = new BABYLON.Animation(
+    const animation = new Babylon.Animation(
         `danceAnimation_${boneName}`, 'rotationQuaternion', CONFIG.fps,
-        BABYLON.Animation.ANIMATIONTYPE_QUATERNION, BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE);
+        Babylon.Animation.ANIMATIONTYPE_QUATERNION, Babylon.Animation.ANIMATIONLOOPMODE_CYCLE);
 
     // Make keyframes
-    //[...Array(5).keys()]
     const keyFrames = [...Array(CONFIG.keyFramesNum).keys()].map(i => {
         return {
             frame: i * CONFIG.fps,
             value: getRandomPose(range)
         }
     });
+
+    // Set 0th and last keyframes to the initial pose
     const initialPose = transformNode.rotationQuaternion;
     if (initialPose === null) {
         logger.warn(`createAnimation: initialPose is null for bone ${boneName}`);
@@ -151,13 +156,13 @@ function createAnimation(boneName, range, transformNode) {
 
 /**
  * @param {MovementRange} range
- * @returns {BABYLON.Quaternion}
+ * @returns {Babylon.Quaternion}
  */
 function getRandomPose(range) {
     const x = getRandomArbitrary(range.x.min, range.x.max);
     const y = getRandomArbitrary(range.y.min, range.y.max);
     const z = getRandomArbitrary(range.z.min, range.z.max);
-    return BABYLON.Quaternion.FromEulerAngles(x, y, z);
+    return Babylon.Quaternion.FromEulerAngles(x, y, z);
 }
 
 /**
