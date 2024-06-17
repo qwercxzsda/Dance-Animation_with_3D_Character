@@ -5,7 +5,7 @@
 export class logger {
     static warn(message) {
         const date = new Date();
-        console.log(`[${date.toISOString()}] [WARN] -- ${message}`);
+        console.warn(`[${date.toISOString()}] [WARN] -- ${message}`);
     }
 
     static info(message) {
