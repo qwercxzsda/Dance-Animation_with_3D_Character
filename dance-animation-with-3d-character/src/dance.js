@@ -11,12 +11,55 @@ import * as CONFIG from './config';
 const importantBonesMovementRange =
     {
         // TODO: Add more bones
+        Spine: {
+            x: {min: degreesToRadians(-15), max: degreesToRadians(40)},
+            y: {min: degreesToRadians(-30), max: degreesToRadians(30)},
+            z: {min: degreesToRadians(-15), max: degreesToRadians(15)}
+        },
+        Head: {
+            x: {min: degreesToRadians(-15), max: degreesToRadians(15)},
+            y: {min: degreesToRadians(-15), max: degreesToRadians(15)},
+            z: {min: degreesToRadians(-15), max: degreesToRadians(15)}
+        },
         LeftArm: {
-            x: {min: -Math.PI * 0.25, max: Math.PI * 0.25},
-            y: {min: -Math.PI * 0.25, max: Math.PI * 0.25},
-            z: {min: -Math.PI * 0.25, max: Math.PI * 0.25}
+            x: {min: degreesToRadians(0), max: degreesToRadians(51)},
+            y: {min: degreesToRadians(-21), max: degreesToRadians(41)},
+            z: {min: degreesToRadians(-34), max: degreesToRadians(51)}
+        },
+        LeftForeArm: {
+            x: {min: degreesToRadians(0), max: degreesToRadians(8)},
+            y: {min: degreesToRadians(-15), max: degreesToRadians(0)},
+            z: {min: degreesToRadians(0), max: degreesToRadians(110)}
+        },
+        RightArm: {
+            x: {min: degreesToRadians(0), max: degreesToRadians(47)},
+            y: {min: degreesToRadians(-6), max: degreesToRadians(35)},
+            z: {min: degreesToRadians(-54), max: degreesToRadians(35)}
+        },
+        RightForeArm: {
+            x: {min: degreesToRadians(0), max: degreesToRadians(9)},
+            y: {min: degreesToRadians(0), max: degreesToRadians(13)},
+            z: {min: degreesToRadians(-92), max: degreesToRadians(0)}
+        },
+        LeftLeg: {
+            x: {min: degreesToRadians(-10), max: degreesToRadians(10)},
+            y: {min: degreesToRadians(-10), max: degreesToRadians(10)},
+            z: {min: degreesToRadians(-10), max: degreesToRadians(10)}
+        },
+        RightLeg: {
+            x: {min: degreesToRadians(-10), max: degreesToRadians(10)},
+            y: {min: degreesToRadians(-10), max: degreesToRadians(10)},
+            z: {min: degreesToRadians(-10), max: degreesToRadians(10)}
         },
     };
+
+/**
+ * @param {number} degree
+ * @returns {number}
+ */
+function degreesToRadians(degree) {
+    return degree * Math.PI / 180;
+}
 
 /**
  * @param {BABYLON.Bone[]} boneList
@@ -126,4 +169,3 @@ function getRandomPose(range) {
 function getRandomArbitrary(min, max) {
     return Math.random() * (max - min) + min;
 }
-

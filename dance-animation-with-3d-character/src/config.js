@@ -27,4 +27,4 @@ export const framesNum = fps * keyFramesNum;
 /**
  * @type {number}
  */
-export const defaultBpm = 100;
+export const defaultBpm = 60;
