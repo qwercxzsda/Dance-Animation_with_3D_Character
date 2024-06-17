@@ -3,6 +3,7 @@
 import './style.css';
 import {CanvasController} from './src/canvas.js';
 import {logger} from './src/logger.js';
+import * as CONFIG from './src/config.js';
 
 main();
 
@@ -10,7 +11,7 @@ function main() {
     logger.info('setUpCanvas start');
     // @ts-ignore: renderCanvas is defined in index.html
     const canvasController = new CanvasController(document.querySelector('#renderCanvas'));
-    canvasController.setUpCanvas('/Kachujin.glb', '.glb');
+    canvasController.setUpCanvas(CONFIG.defaultModelPath, CONFIG.defaultModelExtension);
     logger.info('setUpCanvas complete');
 
     logger.info('setUpInputModel start');
@@ -59,6 +60,6 @@ function setUpInputSong(inputSong, canvasController) {
 
         const file = inputSong.files[0];
         const inputSongPath = URL.createObjectURL(file);
-        const BPM = await canvasController.changeSong(inputSongPath);
+        const bpm = await canvasController.changeSong(inputSongPath);
     });
 }

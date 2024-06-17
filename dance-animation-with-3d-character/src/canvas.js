@@ -4,6 +4,8 @@ import * as BABYLON from '@babylonjs/core';
 import '@babylonjs/loaders';
 import {logger} from "./logger.js";
 import {guess} from 'web-audio-beat-detector';
+import * as Config from './config.js';
+import * as Dance from './dance.js';
 
 export class CanvasController {
     /**
@@ -22,6 +24,14 @@ export class CanvasController {
      * @type {BABYLON.Sound | null}
      */
     #sound;
+    /**
+     * @type {number}
+     */
+    #soundBpm;
+    /**
+     * @type {BABYLON.AnimationGroup}
+     */
+    #animationGroup;
 
     /**
      * Constructor of CanvasController
@@ -31,6 +41,7 @@ export class CanvasController {
      */
     constructor(canvas) {
         this.#canvas = canvas;
+        this.#soundBpm = Config.defaultBpm;
     }
 
     /**
@@ -72,8 +83,12 @@ export class CanvasController {
             // Furthermore, we will set every variable to null after dispose (just to be safe)
             this.#scene = null;
         }
-        const scene = await this.#createScene(modelPath, extension);
+        const {scene, skeleton} = await this.#createScene(modelPath, extension);
         this.#scene = scene;
+
+        this.#animationGroup = Dance.createAnimationGroup(scene, skeleton.bones);
+
+        this.play();
 
         this.#engine.runRenderLoop(() => scene.render());
         logger.info('changeModel: returned {}');
@@ -94,11 +109,15 @@ export class CanvasController {
             this.#sound.dispose();
             this.#sound = null;
         }
-        const sound = new BABYLON.Sound("sound", soundPath, this.#scene, null, {loop: true, autoplay: true});
-        this.#sound = sound;
-        const soundBPM = await this.#getSongBPM(soundPath);
-        logger.info(`changeSong: returned {soundBPM: ${soundBPM}`);
-        return soundBPM;
+        this.#sound = new BABYLON.Sound("sound", soundPath, this.#scene, null, {loop: true, autoplay: true});
+        const soundBpm = await this.#getSongBPM(soundPath);
+        this.#soundBpm = soundBpm;
+
+        this.stop();
+        this.play();
+
+        logger.info(`changeSong: returned {soundBPM: ${soundBpm}`);
+        return soundBpm;
     }
 
     /**
@@ -134,14 +153,43 @@ export class CanvasController {
      * Asynchronously create a new BABYLON.Scene using the model from the modelPath
      * @param {String} modelPath
      * @param {String} extension
-     * @returns {Promise<BABYLON.Scene>}
+     * @returns {Promise<{scene: BABYLON.Scene, skeleton: BABYLON.Skeleton}>}
      */
     async #createScene(modelPath, extension) {
         logger.info(`createScene: called {modelPath: ${modelPath}, extension: ${extension}}`);
-        const scene = await BABYLON.SceneLoader.LoadAsync(modelPath, "", this.#engine, null, extension);
+        // const scene = await BABYLON.SceneLoader.LoadAsync(modelPath, "", this.#engine, null, extension);
+        const scene = new BABYLON.Scene(this.#engine);
+        const result = await BABYLON.SceneLoader.ImportMeshAsync("", modelPath, "", scene, null, extension);
         this.#createCameraAndLightAndEnvironment(scene);
-        logger.info(`createScene: returned {scene: ${scene}}`);
-        return scene;
+
+        logger.info(`createScene: {result.meshes: ${result.meshes}}`);
+        logger.info(`createScene: {result.skeletons: ${result.skeletons}}`);
+
+        if (!this.#isValidSkeletons(result.skeletons)) {
+            logger.warn('createScene: this.#skeleton is not valid, using default model instead');
+            scene.dispose();
+            return await this.#createScene(Config.defaultModelPath, Config.defaultModelExtension);
+        }
+        scene.animatables.forEach(animatable => animatable.stop());
+
+        logger.info(`createScene: returned {{scene, skeleton}: ${{scene: scene, skeleton: result.skeletons[0]}}}`);
+        return {scene: scene, skeleton: result.skeletons[0]};
+    }
+
+    /**
+     *
+     * @param {BABYLON.Skeleton[]} skeletons
+     * @returns {boolean}
+     */
+    #isValidSkeletons(skeletons) {
+        if (skeletons.length !== 1) {
+            logger.warn(`isValidSkeletons: skeletons.length expected: 1, actual: ${skeletons.length}`);
+            return false;
+        } else if (!Dance.isValidBones(skeletons[0].bones)) {
+            logger.warn(`isValidSkeletons: skeletons[0].bones is not valid`);
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -152,5 +200,31 @@ export class CanvasController {
         scene.createDefaultCamera(true, true, true);
         scene.createDefaultLight(true);
         scene.createDefaultEnvironment({groundColor: BABYLON.Color3.White()});
+    }
+
+    /**
+     * this.#animationGroup has one key frame per second
+     * Thus, setting the speed ratio as (bpm / 60) syncs the animation with the sound bpm
+     * @returns {void}
+     */
+    play() {
+        this.#animationGroup.speedRatio = this.#soundBpm / 60;
+        logger.info(`play: this.#animationGroup.speedRatio: ${this.#animationGroup.speedRatio}=${this.#soundBpm}/60`);
+        this.#animationGroup.play(true);
+    }
+
+    /**
+     * @returns {void}
+     */
+    pause() {
+        this.#animationGroup.pause();
+    }
+
+    /**
+     * @returns {void}
+     */
+    stop() {
+        this.#animationGroup.reset();
+        this.#animationGroup.stop();
     }
 }
