@@ -149,8 +149,13 @@ function createAnimation(boneName, range, transformNode) {
         keyFrames[CONFIG.keyFramesNum - 1].value = initialPose;
     }
 
+    // Set keyframes
     animation.setKeys(keyFrames);
-    // TODO: set easing function
+    
+    // Set easing function
+    const easingFunction = new Babylon.BezierCurveEase();
+    easingFunction.setEasingMode(Babylon.EasingFunction.EASINGMODE_EASEINOUT);
+    animation.setEasingFunction(easingFunction);
     return animation;
 }
 
