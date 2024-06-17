@@ -2,6 +2,7 @@
 
 import * as Babylon from '@babylonjs/core';
 import {logger} from './logger.js';
+import * as Config from './config.js';
 
 export class VideoRecorder {
     /**
@@ -11,7 +12,7 @@ export class VideoRecorder {
     /**
      * @type {Babylon.VideoRecorder | null}
      */
-    #videoRecorder;
+    #videoRecorder = null;
     /**
      * @type {Promise<Blob> | null}
      */
@@ -31,12 +32,6 @@ export class VideoRecorder {
      */
     constructor(engine) {
         this.#engine = engine;
-        if (Babylon.VideoRecorder.IsSupported(engine)) {
-            this.#videoRecorder = new Babylon.VideoRecorder(this.#engine);
-        } else {
-            logger.warn('VideoRecorder is not supported');
-            this.#videoRecorder = null;
-        }
     }
 
     /**
@@ -47,12 +42,22 @@ export class VideoRecorder {
             logger.info('startRecording: already recording');
             return;
         }
-        if (this.#videoRecorder === null) {
+        if (!Babylon.VideoRecorder.IsSupported(this.#engine)) {
             logger.warn('startRecording: VideoRecorder is not supported');
             return;
         }
-        this.#recordedVideoPromise =
-            this.#videoRecorder.startRecording(null, 0);
+
+        let audioTracks = [];
+        if (Babylon.Engine.audioEngine !== null && Babylon.Engine.audioEngine.audioContext !== null) {
+            const outputNode = Babylon.Engine.audioEngine.audioContext.createMediaStreamDestination();
+            Babylon.Engine.audioEngine.masterGain.connect(outputNode);
+            audioTracks = outputNode.stream.getAudioTracks()
+        }
+
+        this.#videoRecorder =
+            new Babylon.VideoRecorder(this.#engine, {audioTracks: audioTracks});
+
+        this.#recordedVideoPromise = this.#videoRecorder.startRecording(null, 0);
         this.#isRecording = true;
         this.#recordStartTime = Date.now();
     }
@@ -69,6 +74,7 @@ export class VideoRecorder {
             return;
         }
         this.#videoRecorder.stopRecording();
+        this.#videoRecorder = null;
         this.#isRecording = false;
     }
 
@@ -101,7 +107,7 @@ export class VideoRecorder {
 
         const dummyLink = document.createElement('a');
         dummyLink.href = URL.createObjectURL(recordedVideo);
-        dummyLink.download = 'dance.mp4';
+        dummyLink.download = Config.defualtRecordedVideoName;
         dummyLink.click();
     }
 }

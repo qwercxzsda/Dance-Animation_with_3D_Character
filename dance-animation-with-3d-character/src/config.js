@@ -28,3 +28,8 @@ export const defaultBpm = 60;
  * @type {number}
  */ 
 export const recordingTimeout = 60;
+
+/**
+ * @type {String}
+ */
+export const defualtRecordedVideoName = 'dance.webm'
