@@ -48,7 +48,7 @@ export class CanvasController {
      * Side effect: change this.#engine
      * @param {String} modelPath
      * @param {String} extension
-     * @returns {Promise<void>}
+     * @returns {Promise<Babylon.Engine>}
      */
     async setUpCanvas(modelPath, extension) {
         logger.info(`setUpCanvas: called {modelPath: ${modelPath}, extension: ${extension}}`);
@@ -58,7 +58,8 @@ export class CanvasController {
         await this.changeModel(modelPath, extension);
 
         window.addEventListener('resize', () => engine.resize());
-        logger.info('setUpCanvas: returned {}');
+        logger.info(`setUpCanvas: returned {engine: ${engine}}`);
+        return engine;
     }
 
     /**

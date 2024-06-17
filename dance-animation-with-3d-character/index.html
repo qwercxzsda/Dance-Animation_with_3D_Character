@@ -17,10 +17,17 @@
     <label id="bpmButton"></label>
   </div>
   <canvas id="renderCanvas"></canvas>
-  <div id="mediaControlWrapper">
-    <label id="playButton">Play</label>
-    <label id="pauseButton">Pause</label>
-    <label id="stopButton">Stop</label>
+  <div id="controlsWrapper">
+    <div id="mediaControlWrapper">
+      <label id="playButton">Play</label>
+      <label id="pauseButton">Pause</label>
+      <label id="stopButton">Stop</label>
+    </div>
+    <div id="videoRecordControlWrapper">
+      <label id="startRecordingButton">Start Recording</label>
+      <label id="recordingTimer">0 sec / 0 sec</label>
+      <label id="stopRecordingButton">Stop Recording / Download</label>
+    </div>
   </div>
 </div>
 <script type="module" src="/main.js"></script>

@@ -40,11 +40,20 @@ body {
   justify-content: space-between;
 }
 
+#wrapper #controlsWrapper {
+  display: flex;
+  flex-direction: row;
+  padding: 10px;
+  width: 60%;
+  justify-content: space-between;
+}
+
 #wrapper #mediaControlWrapper {
   display: flex;
   flex-direction: row;
   padding: 10px;
   width: 30%;
+  height: fit-content;
   justify-content: space-between;
 }
 
@@ -78,7 +87,7 @@ body {
 
 #wrapper #renderCanvas {
   width: 100%;
-  height: 60%;
+  height: 65%;
   touch-action: none;
 }
 
@@ -96,4 +105,19 @@ body {
 #wrapper #mediaControlWrapper #stopButton {
   background-color: #5922a8;
   color: #f9f9f9;
+}
+
+#wrapper #videoRecordControlWrapper #startRecordingButton {
+  background-color: #92c298;
+  color: #242424;
+}
+
+#wrapper #videoRecordControlWrapper #recordingTimer {
+  background-color: #f9f9f9;
+  color: #242424;
+}
+
+#wrapper #videoRecordControlWrapper #stopRecordingButton {
+  background-color: #e8b882;
+  color: #242424;
 }
