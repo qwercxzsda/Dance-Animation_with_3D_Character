@@ -211,6 +211,12 @@ export class CanvasController {
         this.#animationGroup.speedRatio = this.#soundBpm / 60;
         logger.info(`play: this.#animationGroup.speedRatio: ${this.#animationGroup.speedRatio}=${this.#soundBpm}/60`);
         this.#animationGroup.play(true);
+
+        if (this.#sound !== undefined && this.#sound !== null) {
+            // Playing the sound multiple times without pause will cause multiple sounds to play simultaneously
+            this.#sound.pause();
+            this.#sound.play();
+        }
     }
 
     /**
@@ -218,6 +224,10 @@ export class CanvasController {
      */
     pause() {
         this.#animationGroup.pause();
+
+        if (this.#sound !== undefined && this.#sound !== null) {
+            this.#sound.pause();
+        }
     }
 
     /**
@@ -226,5 +236,9 @@ export class CanvasController {
     stop() {
         this.#animationGroup.reset();
         this.#animationGroup.stop();
+
+        if (this.#sound !== undefined && this.#sound !== null) {
+            this.#sound.stop();
+        }
     }
 }

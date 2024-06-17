@@ -21,8 +21,18 @@ function main() {
 
     logger.info('setUpInputSong start');
     // @ts-ignore: inputSong is defined in index.html
-    setUpInputSong(document.querySelector('#inputSong'), canvasController);
+    setUpInputSong(document.querySelector('#bpmButton'),
+        document.querySelector('#inputSong'), canvasController);
     logger.info('setUpInputSong complete');
+
+    logger.info('setUpMediaButton start');
+    // @ts-ignore: playButton is defined in index.html
+    setUpPlayButton(document.querySelector('#playButton'), canvasController);
+    // @ts-ignore: pauseButton is defined in index.html
+    setUpPauseButton(document.querySelector('#pauseButton'), canvasController);
+    // @ts-ignore: stopButton is defined in index.html
+    setUpStopButton(document.querySelector('#stopButton'), canvasController);
+    logger.info('setUpMediaButton complete');
 }
 
 /**
@@ -46,11 +56,13 @@ function setUpInputModel(inputModel, canvasController) {
 }
 
 /**
+ * @param {HTMLLabelElement} bpmButton
  * @param {HTMLInputElement} inputSong
  * @param {CanvasController} canvasController
  * @returns {void}
  */
-function setUpInputSong(inputSong, canvasController) {
+function setUpInputSong(bpmButton, inputSong, canvasController) {
+    bpmButton.innerHTML = `BPM: ${CONFIG.defaultBpm}`;
     inputSong.addEventListener('change', async function () {
         logger.info('Event: inputSong change');
         if (inputSong.files === null || inputSong.files.length === 0) {
@@ -61,5 +73,42 @@ function setUpInputSong(inputSong, canvasController) {
         const file = inputSong.files[0];
         const inputSongPath = URL.createObjectURL(file);
         const bpm = await canvasController.changeSong(inputSongPath);
+        bpmButton.innerHTML = `BPM: ${bpm}`;
+    });
+}
+
+/**
+ * @param {HTMLLabelElement} playButton
+ * @param {CanvasController} canvasController
+ * @returns {void}
+ */
+function setUpPlayButton(playButton, canvasController) {
+    playButton.addEventListener('click', function () {
+        logger.info('Event: playButton click');
+        canvasController.play();
+    });
+}
+
+/**
+ * @param {HTMLLabelElement} pauseButton
+ * @param {CanvasController} canvasController
+ * @returns {void}
+ */
+function setUpPauseButton(pauseButton, canvasController) {
+    pauseButton.addEventListener('click', function () {
+        logger.info('Event: pauseButton click');
+        canvasController.pause();
+    });
+}
+
+/**
+ * @param {HTMLLabelElement} stopButton
+ * @param {CanvasController} canvasController
+ * @returns {void}
+ */
+function setUpStopButton(stopButton, canvasController) {
+    stopButton.addEventListener('click', function () {
+        logger.info('Event: stopButton click');
+        canvasController.stop();
     });
 }
