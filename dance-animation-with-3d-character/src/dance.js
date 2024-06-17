@@ -115,7 +115,7 @@ export function createAnimationGroup(scene, boneList) {
         }
     );
 
-    animationGroup.normalize(0, CONFIG.framesNum);
+    animationGroup.normalize(0, CONFIG.fps * (CONFIG.keyFramesNum - 1));
     return animationGroup;
 }
 
